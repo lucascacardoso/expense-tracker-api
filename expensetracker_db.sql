@@ -2,40 +2,40 @@ drop database expensetrackerdb;
 drop user expensetracker;
 create user expensetracker with password 'password';
 create database expensetrackerdb with template=template0 owner=expensetracker;
-\connect expensetrackerdb;
+\connect expensetrackerdb expensetracker;
 alter default privileges grant all on tables to expensetracker;
 alter default privileges grant all on sequences to expensetracker;
 
+/*
+ * 
+ * To use with JDBCAuthentication
+ * 
 create table et_users(
-user_id integer primary key not null,
-first_name varchar(20) not null,
-last_name varchar(20) not null,
-email varchar(30) not null,
-password text not null
+	email varchar(30) not null primary key,
+	first_name varchar(20) not null,
+	last_name varchar(20) not null,
+	password text not null,
+	enabled boolean not null DEFAULT true
 );
 
-create table et_categories(
-category_id integer primary key not null,
-user_id integer not null,
-title varchar(20) not null,
-description varchar(50) not null
+create table authorities (
+	email varchar(20) not NULL,
+	authority varchar(20) not NULL,
+	constraint foreign_authorities_users_1 foreign key(email) references et_users(email)	
 );
-alter table et_categories add constraint cat_users_fk
-foreign key (user_id) references et_users(user_id);
 
-create table et_transactions(
-transaction_id integer primary key not null,
-category_id integer not null,
-user_id integer not null,
-amount numeric(10,2) not null,
-note varchar(50) not null,
-transaction_date bigint not null
-);
-alter table et_transactions add constraint trans_cat_fk
-foreign key (category_id) references et_categories(category_id);
-alter table et_transactions add constraint trans_users_fk
-foreign key (user_id) references et_users(user_id);
+create unique index ix_auth_email on authorities (email,authority);
 
-create sequence et_users_seq increment 1 start 1;
-create sequence et_categories_seq increment 1 start 1;
-create sequence et_transactions_seq increment 1 start 1000;
+*/
+
+/*
+insert into et_users (email, first_name, last_name, password, enabled)
+  values ('lucas@teste.com',
+    'Lucas',
+    'Camargo',
+    '$2a$10$wBUOEWhUyvt0iYrM9.rDBunHbQQt.RwdzYL7Tz.D7mmXSQKM0GYf6',
+    true);
+
+insert into authorities (email, authority)
+  values ('lucas@teste.com', 'ROLE_ADM');
+*/
